@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiverSense | Smart Riverbank Monitoring</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f2f6fa;color:#183047}
+header{background:#103b59;color:white;padding:22px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+header h1{font-size:25px}
+header p{font-size:12px;color:#c5dce9;margin-top:5px}
+.status{background:#176b50;padding:9px 15px;border-radius:20px;font-size:12px}
+main{max-width:1250px;margin:30px auto;padding:0 20px}
+.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:10px;flex-wrap:wrap}
+.heading h2{font-size:23px}
+.demo{font-size:11px;color:#93600b;background:#fff0ce;padding:9px 12px;border-radius:20px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card,.panel{background:white;padding:20px;border-radius:13px;box-shadow:0 3px 15px #193b5510}
+.card h3{font-size:13px;color:#718394;font-weight:500}
+.value{font-size:27px;font-weight:bold;margin:15px 0 7px}
+.unit{font-size:13px;color:#748697}
+.note{font-size:11px;color:#8795a2}
+.content{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:20px}
+.panel h3{font-size:17px;margin-bottom:8px}
+.panel p{font-size:12px;color:#8795a2;margin-bottom:18px}
+.risk{font-size:30px;color:#d18a1c;font-weight:bold;margin:15px 0}
+.progress{height:10px;background:#edf0f3;border-radius:20px;overflow:hidden}
+.progress div{height:100%;width:72%;background:#e3a332}
+.info{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #edf0f3;font-size:13px}
+.info span{color:#788897}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.sensor{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #edf0f3;font-size:13px}
+.online{color:#16845b;font-weight:bold}
+.gps-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gps-box{background:#f2f7fa;border-radius:9px;padding:13px}
+.gps-box small{color:#788897}
+.gps-box strong{display:block;margin-top:7px;font-size:16px;overflow-wrap:anywhere}
+.map{height:180px;background:#e2f0e9;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;margin-top:14px;padding:15px}
+footer{text-align:center;color:#8998a5;font-size:12px;margin:30px 0;line-height:1.6}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.content,.bottom{grid-template-columns:1fr}}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.card{padding:14px}.value{font-size:22px}main{padding:0 12px}}
+</style>
+</head>
+<body>
+
+<header>
+ <div>
+  <h1>🌊 RiverSense</h1>
+  <p>IoT & AI-Based Riverbank Erosion Prediction System</p>
+ </div>
+ <div class="status">● DEMO ONLINE</div>
+</header>
+
+<main>
+ <div class="heading">
+  <div>
+   <h2>Live Monitoring Dashboard</h2>
+   <p style="color:#8795a2;font-size:12px;margin-top:6px">Monitoring Station: RS-001 | Bangladesh</p>
+  </div>
+  <div class="demo">SIMULATED DATA — NOT REAL SENSOR READINGS</div>
+ </div>
+
+ <section class="grid">
+  <div class="card">
+   <h3>🌊 Water Level</h3>
+   <div class="value" id="water">5.42 <span class="unit">m</span></div>
+   <div class="note">JSN-SR04T</div>
+  </div>
+  <div class="card">
+   <h3>🌧️ Rain Status</h3>
+   <div class="value" id="rain">Detected</div>
+   <div class="note">FC-37 / YL-83</div>
+  </div>
+  <div class="card">
+   <h3>📐 Bank Tilt</h3>
+   <div class="value" id="tilt">2.4 <span class="unit">°</span></div>
+   <div class="note">MPU6050</div>
+  </div>
+  <div class="card">
+   <h3>💧 Soil Moisture</h3>
+   <div class="value" id="soil">68 <span class="unit">%</span></div>
+   <div class="note">Soil Moisture Sensor</div>
+  </div>
+  <div class="card">
+   <h3>〰️ Vibration</h3>
+   <div class="value" id="vibration">Detected</div>
+   <div class="note">SW-420</div>
+  </div>
+  <div class="card">
+   <h3>🌡️ Temperature</h3>
+   <div class="value" id="temperature">31 <span class="unit">°C</span></div>
+   <div class="note">DHT22</div>
+  </div>
+  <div class="card">
+   <h3>☁️ Humidity</h3>
+   <div class="value" id="humidity">78 <span class="unit">%</span></div>
+   <div class="note">DHT22</div>
+  </div>
+  <div class="card">
+   <h3>📍 GPS Status</h3>
+   <div class="value" style="font-size:21px" id="gpsStatus">Searching</div>
+   <div class="note">NEO-6M GPS Module</div>
+  </div>
+ </section>
+
+ <section class="content">
+  <div class="panel">
+   <h3>Water Level History</h3>
+   <p>Recent water-level readings · Sample data</p>
+   <canvas id="waterChart"></canvas>
+  </div>
+
+  <div class="panel">
+   <h3>AI Erosion Prediction</h3>
+   <p>Machine Learning risk estimation</p>
+   <div style="font-size:12px;color:#8795a2">Estimated Risk Score</div>
+   <div class="risk">72% — HIGH</div>
+   <div class="progress"><div></div></div>
+   <div class="info"><span>Risk Category</span><b>HIGH</b></div>
+   <div class="info"><span>Prediction Horizon</span><b>Model dependent</b></div>
+   <div class="info"><span>Model Status</span><b style="color:#c88719">Demo Only</b></div>
+   <div class="info"><span>Last Prediction</span><b id="predictionTime">--</b></div>
+  </div>
+ </section>
+
+ <section class="bottom">
+  <div class="panel">
+   <h3>GPS Live Location</h3>
+   <p>NEO-6M GPS Module · Sample coordinates until hardware connection</p>
+   <div class="gps-grid">
+    <div class="gps-box"><small>Latitude</small><strong id="latitude">22.8456° N</strong></div>
+    <div class="gps-box"><small>Longitude</small><strong id="longitude">89.5403° E</strong></div>
+    <div class="gps-box"><small>GPS Satellites</small><strong id="satellites">--</strong></div>
+    <div class="gps-box"><small>Signal Status</small><strong id="gpsSignal">Demo</strong></div>
+   </div>
+   <div class="map">
+    <div>
+     <div style="font-size:35px">📍</div>
+     <b>RiverSense Station RS-001</b>
+     <p style="margin-top:7px">GPS map position will update when NEO-6M is connected.</p>
+     <a id="mapLink" href="https://www.google.com/maps" target="_blank" style="font-size:12px;color:#1677b8">Open Map</a>
+    </div>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>Sensor & Device Status</h3>
+   <p>Monitoring device health</p>
+   <div class="sensor"><span>ESP32 Controller</span><b class="online">● Demo Online</b></div>
+   <div class="sensor"><span>JSN-SR04T</span><b class="online">● Demo Active</b></div>
+   <div class="sensor"><span>Rain Sensor</span><b class="online">● Demo Active</b></div>
+   <div class="sensor"><span>MPU6050</span><b class="online">● Demo Active</b></div>
+   <div class="sensor"><span>Soil Moisture</span><b class="online">● Demo Active</b></div>
+   <div class="sensor"><span>SW-420 / DHT22</span><b class="online">● Demo Active</b></div>
+   <div class="sensor"><span>NEO-6M GPS</span><b class="online">● Demo Display</b></div>
+   <div class="sensor"><span>ML Prediction Service</span><b style="color:#c88719">● Not Connected</b></div>
+  </div>
+ </section>
+
+ <footer>
+  RiverSense | Academic Project Prototype<br>
+  Demo values are simulated. Real sensor readings require ESP32 integration and live AI prediction requires a trained ML model.
+ </footer>
+</main>
+
+<script>
+const historyData=[4.8,4.9,5.0,5.1,5.15,5.2,5.3,5.35,5.42];
+
+new Chart(document.getElementById('waterChart'),{
+ type:'line',
+ data:{
+  labels:['10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM','5 PM','Now'],
+  datasets:[{
+   label:'Water Level (m)',
+   data:historyData,
+   borderColor:'#1687bd',
+   backgroundColor:'rgba(22,135,189,.12)',
+   fill:true,tension:.35
+  }]
+ },
+ options:{responsive:true,plugins:{legend:{display:false}}}
+});
+
+// Demo sensor values only. Replace this function with ESP32 API data.
+function updateDemo(){
+ document.getElementById('water').innerHTML=(5.42+(Math.random()-.5)*.08).toFixed(2)+' <span class="unit">m</span>';
+ document.getElementById('tilt').innerHTML=(2.4+(Math.random()-.5)*.2).toFixed(1)+' <span class="unit">°</span>';
+ document.getElementById('soil').innerHTML=Math.round(68+(Math.random()-.5)*3)+' <span class="unit">%</span>';
+ document.getElementById('temperature').innerHTML=(31+(Math.random()-.5)).toFixed(1)+' <span class="unit">°C</span>';
+ document.getElementById('humidity').innerHTML=Math.round(78+(Math.random()-.5)*3)+' <span class="unit">%</span>';
+ document.getElementById('rain').textContent=Math.random()>.35?'Detected':'Not Detected';
+ document.getElementById('vibration').textContent=Math.random()>.65?'Detected':'No Event';
+ document.getElementById('predictionTime').textContent=new Date().toLocaleTimeString();
+}
+
+// Demo coordinates only. Replace with NEO-6M latitude/longitude from ESP32.
+const demoGPS={latitude:22.8456,longitude:89.5403,satellites:7};
+document.getElementById('latitude').textContent=demoGPS.latitude.toFixed(4)+'° N';
+document.getElementById('longitude').textContent=demoGPS.longitude.toFixed(4)+'° E';
+document.getElementById('satellites').textContent=demoGPS.satellites;
+document.getElementById('gpsStatus').textContent='Demo Fix';
+document.getElementById('gpsSignal').textContent='Sample Data';
+document.getElementById('mapLink').href=
+ 'https://www.google.com/maps?q='+demoGPS.latitude+','+demoGPS.longitude;
+
+updateDemo();
+setInterval(updateDemo,3000);
+</script>
+</body>
+</html>
